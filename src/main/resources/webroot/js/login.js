@@ -10,7 +10,9 @@ $(document).ready(function () {
                 password: $("#password").val()
             },
             success: function (data) {
-                console.log(data);
+                if (data.result == true) {
+                    window.location.href = "http://www.baidu.com";
+                }
             },
         });
     });

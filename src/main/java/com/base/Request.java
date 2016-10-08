@@ -52,7 +52,7 @@ public class Request implements ServletRequest {
     }
 
     public void parse() throws Exception {
-        // TODO: 2016/10/8 根据长度来获取后续内容 使用readline也可以
+        // TODO: 2016/10/8 获取params
 
         BufferedReader br = new BufferedReader(new InputStreamReader(input));
 
