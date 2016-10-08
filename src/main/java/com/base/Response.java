@@ -8,14 +8,33 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class Response implements ServletResponse {
     private static final int BUFFER_SIZE = 1024;
-    public static final String WEB_ROOT = System.getProperty("user.dir") + File.separator + "webroot";
+    public static final String WEB_ROOT = System.getProperty("user.dir") + File.separator + "src\\main\\resources" +
+            "\\webroot";
     Request request;
     OutputStream output;
     PrintWriter writer;
+
+
+    private Map<String, Object> header = new HashMap<>();
+
+
+    public void addHeader(String key, Object value) {
+        header.put(key, value);
+    }
+
+    public Object getHeader(String key) {
+        return header.get(key);
+    }
+
+    public Map<String, Object> getHeaders() {
+        return header;
+    }
 
     public Response(OutputStream output) {
         this.output = output;
@@ -25,6 +44,9 @@ public class Response implements ServletResponse {
         this.request = request;
     }
 
+    /**
+     * @throws IOException
+     */
     /* This method is used to serve static pages */
     public void sendStaticResource() throws IOException {
         byte[] bytes = new byte[BUFFER_SIZE];
@@ -39,6 +61,20 @@ public class Response implements ServletResponse {
              * HTTP-Version SP Status-Code SP Reason-Phrase CRLF
              */
             int ch = fis.read(bytes, 0, BUFFER_SIZE);
+
+            // 获取类型
+            String contentType = getContentType(file.getName());
+            long contentLength = file.length();
+
+            // 换行的多种形式演示
+            String headers = "HTTP/1.1 200 OK\n" + "Content-Type:" + contentType + "\r" + "Content-Length:" +
+                    contentLength + "\r\n";
+
+            output.write(headers.getBytes());
+
+            // http 头和身体要隔一个空行
+            output.write("\n".getBytes());
+
             while (ch != -1) {
                 output.write(bytes, 0, ch);
                 ch = fis.read(bytes, 0, BUFFER_SIZE);
@@ -52,6 +88,23 @@ public class Response implements ServletResponse {
         finally {
             if (fis != null) fis.close();
         }
+    }
+
+    private static String getContentType(String name) {
+
+        String[] token = name.split("\\.");
+        String extension = token[1];
+
+        switch (extension) {
+            case "html":
+                return "text/html";
+            case "js":
+                return "text/javascript";
+            case "css":
+                return "text/css";
+        }
+
+        return "";
     }
 
     /**
