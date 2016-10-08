@@ -12,7 +12,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandler;
 
-public class ServletProcessor1 {
+public class ServletProcessor {
 
     public void process(Request request, Response response) {
         String uri = request.getUri();

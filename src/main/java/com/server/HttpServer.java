@@ -2,7 +2,7 @@ package com.server;
 
 import com.base.Request;
 import com.base.Response;
-import com.processor.ServletProcessor1;
+import com.processor.ServletProcessor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,7 +77,7 @@ public class HttpServer {
                             // a request for a servlet begins with "/servlet/"
                             System.out.println("------------------ : " + Thread.currentThread().getName());
                             if (request.getUri().startsWith("/servlet/")) {
-                                ServletProcessor1 processor = new ServletProcessor1();
+                                ServletProcessor processor = new ServletProcessor();
                                 processor.process(request, response);
                             }
                             else {
