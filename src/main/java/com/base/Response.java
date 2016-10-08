@@ -44,6 +44,10 @@ public class Response implements ServletResponse {
         this.request = request;
     }
 
+    public Request getRequest() {
+        return this.request;
+    }
+
     /**
      * @throws IOException
      */
@@ -71,6 +75,11 @@ public class Response implements ServletResponse {
                     contentLength + "\r\n";
 
             output.write(headers.getBytes());
+
+            for (Map.Entry item : header.entrySet()) {
+                String str = item.getKey() + ":" + item.getValue() + "\r\n";
+                output.write(str.getBytes());
+            }
 
             // http 头和身体要隔一个空行
             output.write("\n".getBytes());

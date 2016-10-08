@@ -6,24 +6,42 @@ import javax.servlet.ServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class Request implements ServletRequest {
     private InputStream input;
     private String uri;
+    private Map<String, Object> session;
+    private Map<String, Object> cookies = new HashMap<>();
+
+    public void setCookies(Map<String, Object> cookies) {
+        this.cookies = cookies;
+    }
 
     public Request(InputStream input) {
         this.input = input;
     }
 
+    public void setSession(Map<String, Object> session) {
+        this.session = session;
+    }
+
     public String getUri() {
+
         return uri;
     }
 
+    public Map<String, Object> getSession() {
+        return this.session;
+    }
+
     private String parseUri(String requestString) {
+
         int index1, index2;
         index1 = requestString.indexOf(' ');
         if (index1 != -1) {
@@ -33,25 +51,35 @@ public class Request implements ServletRequest {
         return null;
     }
 
-    public void parse() {
+    public void parse() throws Exception {
         // TODO: 2016/10/8 根据长度来获取后续内容 使用readline也可以
 
+        BufferedReader br = new BufferedReader(new InputStreamReader(input));
 
-        // Read a set of characters from the socket
-        StringBuffer request = new StringBuffer(2048);
-        int i;
-        byte[] buffer = new byte[2048];
-        try {
-            i = input.read(buffer);
+        StringBuffer request = new StringBuffer();
+
+        String line = null;
+        while ((line = br.readLine()) != null) {
+
+            request.append(line);
+
+            if (line.startsWith("Cookie")) {
+                //前面的cookie: 不要
+                String[] cookiesStr = line.substring(7).split(";");
+                for (String cookie : cookiesStr) {
+                    String[] pair = cookie.split("=");
+                    cookies.put(pair[0].trim(), pair[1].trim());
+                }
+            }
+
+            //目前只处理get请求
+            if (line.equals("")) {
+                break;
+            }
         }
-        catch (IOException e) {
-            e.printStackTrace();
-            i = -1;
-        }
-        for (int j = 0; j < i; j++) {
-            request.append((char) buffer[j]);
-        }
-        System.out.print(request.toString());
+
+        System.out.println(request);
+
         uri = parseUri(request.toString());
 
 
@@ -174,5 +202,13 @@ public class Request implements ServletRequest {
     @Override
     public int getRemotePort() {
         return 0;
+    }
+
+    public boolean hasJsessionId() {
+        return false;
+    }
+
+    public Map<String, Object> getCookies() {
+        return this.cookies;
     }
 }

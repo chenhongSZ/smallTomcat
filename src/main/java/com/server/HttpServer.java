@@ -11,6 +11,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class HttpServer {
     /**
@@ -28,12 +30,12 @@ public class HttpServer {
     /**
      * servlet context
      */
-    private HashMap<String, Object> application = new HashMap<String, Object>();
+    public static HashMap<String, Object> application = new HashMap<String, Object>();
 
     /**
      * sessions
      */
-    private HashMap<String, Object> sessions = new HashMap<String, Object>();
+    public static HashMap<String, Map<String, Object>> sessions = new HashMap<>();
 
     public static void main(String[] args) {
         HttpServer server = new HttpServer();
@@ -72,10 +74,25 @@ public class HttpServer {
                             // create Response object
                             Response response = new Response(output);
                             response.setRequest(request);
-                            // check if this is a request for a servlet or
-                            // a static resource
-                            // a request for a servlet begins with "/servlet/"
-                            System.out.println("------------------ : " + Thread.currentThread().getName());
+
+                            Map<String, Object> cookies = request.getCookies();
+
+                            String jsessionId = (String) cookies.get("JSESSIONID");
+
+                            if (jsessionId == null) {
+
+                                String uuid = UUID.randomUUID().toString();
+                                response.addHeader("Set-Cookie", " JSESSIONID=" + uuid + "; HttpOnly");
+
+                                Map<String, Object> session = new HashMap<>();
+                                sessions.put(uuid, session);
+                                request.setSession(session);
+
+                            }
+                            else {
+                                request.setSession(sessions.get(jsessionId));
+                            }
+
                             if (request.getUri().startsWith("/servlet/")) {
                                 ServletProcessor processor = new ServletProcessor();
                                 processor.process(request, response);
@@ -84,11 +101,11 @@ public class HttpServer {
                                 StaticResourceProcessor processor = new StaticResourceProcessor();
                                 processor.process(request, response);
                             }
-                            // Close the socket
+
                             socket.close();
                         }
 
-                        catch (IOException e) {
+                        catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
