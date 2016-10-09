@@ -86,11 +86,26 @@ public class HttpServer {
 
                                 Map<String, Object> session = new HashMap<>();
                                 sessions.put(uuid, session);
+
                                 request.setSession(session);
+
+                                application.put("uv", sessions.size());
+                                request.setApplication(application);
 
                             }
                             else {
-                                request.setSession(sessions.get(jsessionId));
+                                Map<String, Object> session = sessions.get(jsessionId);
+
+                                if (session == null) {
+                                    session = new HashMap<>();
+                                }
+
+                                sessions.put(jsessionId, session);
+
+                                request.setSession(session);
+
+                                application.put("uv", sessions.size());
+                                request.setApplication(application);
                             }
 
                             if (request.getUri().startsWith("/servlet/")) {

@@ -17,7 +17,26 @@ public class Request implements ServletRequest {
     private InputStream input;
     private String uri;
     private Map<String, Object> session;
+
+    public Map<String, Object> getApplication() {
+        return application;
+    }
+
+    public void setApplication(Map<String, Object> application) {
+        this.application = application;
+    }
+
+    private Map<String, Object> application;
     private Map<String, Object> cookies = new HashMap<>();
+    private Map<String, String> params = new HashMap<>();
+
+    public Map<String, String> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, String> params) {
+        this.params = params;
+    }
 
     public void setCookies(Map<String, Object> cookies) {
         this.cookies = cookies;
@@ -80,9 +99,27 @@ public class Request implements ServletRequest {
 
         System.out.println(request);
 
+        if (request == null || request.length() == 0) {
+            throw new RuntimeException("请求为空，应该为浏览器探针");
+        }
+
         uri = parseUri(request.toString());
 
+        //?a=hello&b=ni
+        if (uri != null && !"".equals(uri.trim())) {
+            int index = uri.indexOf("?");
 
+            if (index >= 0) {
+
+                String paramsStr = uri.substring(index + 1);
+                String[] paramsArr = paramsStr.split("&");
+
+                for (String param : paramsArr) {
+                    String[] paramPair = param.split("=");
+                    params.put(paramPair[0], paramPair[1]);
+                }
+            }
+        }
         // TODO: 2016/10/8  解析params 包括post 和get的
     }
 
@@ -132,7 +169,7 @@ public class Request implements ServletRequest {
     }
 
     public String getParameter(String name) {
-        return null;
+        return params.get(name);
     }
 
     public Map getParameterMap() {

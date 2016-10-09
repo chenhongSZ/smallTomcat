@@ -17,6 +17,14 @@ public class ServletProcessor {
     public void process(Request request, Response response) {
         String uri = request.getUri();
         String servletName = uri.substring(uri.lastIndexOf("/") + 1);
+
+        //get 后面参数影响
+        int endIndex = servletName.indexOf("?");
+
+        if (endIndex >= 0) {
+            servletName = servletName.substring(0, endIndex);
+        }
+
         URLClassLoader loader = null;
 
         try {
