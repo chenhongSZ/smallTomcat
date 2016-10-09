@@ -100,7 +100,7 @@ public class Request implements ServletRequest {
         System.out.println(request);
 
         if (request == null || request.length() == 0) {
-            throw new RuntimeException("请求为空，应该为浏览器探针");
+            throw new RuntimeException("请求为空，应该为浏览器探针，不用理会");
         }
 
         uri = parseUri(request.toString());
