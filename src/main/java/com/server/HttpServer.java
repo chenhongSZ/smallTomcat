@@ -91,7 +91,6 @@ public class HttpServer {
 
                                 application.put("uv", sessions.size());
                                 request.setApplication(application);
-
                             }
                             else {
                                 Map<String, Object> session = sessions.get(jsessionId);

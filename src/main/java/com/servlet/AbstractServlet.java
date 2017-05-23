@@ -11,9 +11,7 @@ import java.util.Map;
 
 import static java.lang.System.out;
 
-/**
- * ajax
- */
+
 public abstract class AbstractServlet implements Servlet {
     @Override
     public void init(ServletConfig config) throws ServletException {

@@ -9,9 +9,6 @@ import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-/**
- * ajax
- */
 public class LoginServlet extends AbstractServlet {
 
 

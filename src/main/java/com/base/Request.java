@@ -81,6 +81,7 @@ public class Request implements ServletRequest {
         while ((line = br.readLine()) != null) {
 
             request.append(line);
+            request.append("\r\n");
 
             if (line.startsWith("Cookie")) {
                 //前面的cookie: 不要
