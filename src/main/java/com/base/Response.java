@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class Response implements ServletResponse {
     private static final int BUFFER_SIZE = 1024;
-    public static final String WEB_ROOT = System.getProperty("user.dir") + File.separator + "src\\main\\resources" +
-            "\\webroot";
+    public static final String WEB_ROOT = System.getProperty("user.dir") + File.separator + "src/main/resources" +
+            "/webroot";
     Request request;
     OutputStream output;
     PrintWriter writer;
